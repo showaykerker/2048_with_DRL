@@ -2,5 +2,5 @@
 2018 DL Course Project
 
 # Contributors:
-showaykerker
-HuaTsai
+- showaykerker
+- HuaTsai

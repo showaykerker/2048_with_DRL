@@ -1,5 +1,4 @@
 import numpy as np
-import random
 
 class env2048:
 	'''
@@ -28,7 +27,7 @@ class env2048:
 		self.mat = np.zeros((self.n, self.n))
 	
 	
-	def add_blocks(self, max_pow=2, add_=1): 
+	def add_blocks(self, max_pow=2, add_=3): 
 		'''
 			Add add_ numbers range(2, 2**(max_pow+1)) to self.mat
 			If add_ is bigger than numbers of empty slot, then add=len(empty_slot)
@@ -49,38 +48,115 @@ class env2048:
 		self.clean()
 		self.add_blocks(max_pow=max_pow, add_=add_)
 
+	
+	def align(self, mat_, direction):
+		'''
+			Return a matrix after align
+		'''
 		
-	def Action_Top(self):
+		mat = np.copy(mat_)
+		if direction == 'Right':	
+			for i in range(self.n):
+				arr = [ v for v in list(np.copy(mat[i])) if v != 0 ] 
+				for j in range(self.n-len(arr)): arr = [0] + arr
+				mat[i,:] = np.array(arr)
+				
+		elif direction == 'Left':
+			for i in range(self.n):
+				arr = [ v for v in list(np.copy(mat[i])) if v != 0 ] 
+				for j in range(self.n-len(arr)): arr.append(0)
+				mat[i,:] = np.array(arr)
+				
+		elif direction == 'Top':
+			raise NotImplementedError()
+			
+		elif direction == 'Bottom':
+			raise NotImplementedError()
+			
+		else:
+			raise ValueError()
+			
+		return mat
+
+	
+	def Action_Top_(self):
 		'''
 			Calculate Top Arrow Movement
 			Return
 				mat_ : a numpy matrix that present the mattrix after the movement
 		'''
+		# Align all numbers to the right
+		mat = np.copy(self.mat)
+		mat = self.align(mat, 'Right')
+		
 		pass
 						
-	def Action_Bottom(self):
+	def Action_Bottom_(self):
 		'''
 			Calculate Bottom Arrow Movement
 			Return
 				mat_ : a numpy matrix that present the mattrix after the movement
 		'''
+		# Align all numbers to the right
+		mat = np.copy(self.mat)
+		mat = self.align(mat, 'Right')
+		
 		pass
 		
-	def Action_Left(self):
+	def Action_Left_(self):
 		'''
 			Calculate Left Arrow Movement
 			Return
 				mat_ : a numpy matrix that present the mattrix after the movement
 		'''
-		pass
+		# Align all numbers to the left
+		mat = np.copy(self.mat)
+		mat = self.align(mat, 'Left')
+				
+		# Add 
+		for i in range(self.n):
+			for j in range(self.n-1):
+				if mat[i][j+1] == mat[i][j]: 
+					mat[i][j+1] = 0
+					mat[i][j] *= 2
 		
-	def Action_Right(self):
+		# Allign Again
+		mat = self.align(mat, 'Left')
+				
+		return mat
+		
+	def Action_Right_(self):
 		'''
 			Calculate Right Arrow Movement
 			Return
 				mat_ : a numpy matrix that present the mattrix after the movement
 		'''
-		pass
+		# Align all numbers to the right
+		mat = np.copy(self.mat)
+		mat = self.align(mat, 'Right')
+		
+		# Add
+		for i in range(self.n):
+			for j in range(self.n-1):
+				idx = self.n - 1 - j
+				if mat[i][idx-1] == mat[i][idx]:
+					mat[i][idx-1] = 0
+					mat[i][idx] *= 2
+		
+		# Align Again
+		mat = self.align(mat, 'Right')
+		
+		return mat
+	
+	def Action_Right(self):
+		self.mat = self.Action_Right_()
+		self.add_blocks() # args may need to change
+	
+	
+	def Action_Left(self):
+		self.mat = self.Action_Left_()
+		self.add_blocks() # args may need to change
+		
 		
 	def check_empty(self):
 		'''
@@ -96,9 +172,8 @@ class env2048:
 		for i in range(0, self.n):
 			str += '\n|'
 			for j in range(0, self.n):
-				str += '%3d%3d' % (i, j)
-				#if self.mat[i][j] == 0: str += ' ' * 6
-				#else: str += '%6d' % self.mat[i][j]
+				if self.mat[i][j] == 0: str += ' ' * 6
+				else: str += '%6d' % self.mat[i][j]
 				
 				str += '|'
 			str += '\n '
@@ -153,8 +228,17 @@ class env_wrapper(env2048):
 
 if __name__ == '__main__':
 	a = env2048()
-	#a.add_blocks(max_pow=3, add=15)
+	a.add_blocks(max_pow=3, add_=4)
 	print(a)
-
+	a.Action_Left()
+	print(a)
+	a.Action_Right()
+	print(a)
+	a.Action_Left()
+	print(a)
+	a.Action_Right()
+	print(a)
+	a.Action_Left()
+	print(a)
 	
 	

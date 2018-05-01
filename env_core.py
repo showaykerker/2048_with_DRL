@@ -3,6 +3,7 @@ import numpy as np
 def wait_key():
 	''' Wait for a key press on the console and return it. '''
 	import os
+	import sys
 	result = None
 	if os.name == 'nt':
 		import msvcrt
@@ -242,7 +243,7 @@ class env2048:
 		import platform
 		
 		if platform.system() == 'Windows': clean = 'cls'
-		elif platform.system() == 'Linux': clean = 'clean'
+		elif platform.system() == 'Linux': raise NotImplementedError()#clean = 'clean'
 		
 		print("=== Simple 2048 Game on Terminal ===")
 		print("Press w,a,s,d for moving blocks.")

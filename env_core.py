@@ -307,17 +307,17 @@ class env_wrapper(env2048):
 	
 		# Apply Action
 		if action == 0:
-			super().Action_Up()
+			ret = super().Action_Up()
 		elif action == 1:
-			super().Action_Down()
+			ret = super().Action_Down()
 		elif action == 2:
-			super().Action_Left()
+			ret = super().Action_Left()
 		elif action == 3:
-			super().Action_Right()
+			ret = super().Action_Right()
 		
 		# Decide done, r, info [not done yet]
-		done = False
-		r = 1
+		done = ret
+		r = 1 if not ret else 0
 		info = None
 		
 		return super().mat, done, r, info

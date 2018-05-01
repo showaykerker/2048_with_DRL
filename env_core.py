@@ -243,8 +243,10 @@ class env2048:
 		import platform
 		
 		if platform.system() == 'Windows': clean = 'cls'
-		elif platform.system() == 'Linux': raise NotImplementedError()#clean = 'clean'
+		elif platform.system() == 'Linux': clean = 'clear'
 		
+		os.system(clean)
+
 		print("=== Simple 2048 Game on Terminal ===")
 		print("Press w,a,s,d for moving blocks.")
 		input("Press Enter To Start Game.")
@@ -255,14 +257,21 @@ class env2048:
 		while not self.check_dead():
 			cmd = wait_key()
 			os.system(clean)
-			if   cmd == b'w': ret = self.Action_Up()
-			elif cmd == b's': ret = self.Action_Down()
-			elif cmd == b'a': ret = self.Action_Left()
-			elif cmd == b'd': ret = self.Action_Right()
+			if   cmd == b'w' or cmd == 'w': ret = self.Action_Up()
+			elif cmd == b's' or cmd == 's': ret = self.Action_Down()
+			elif cmd == b'a' or cmd == 'a': ret = self.Action_Left()
+			elif cmd == b'd' or cmd == 'd': ret = self.Action_Right()
+			else: 
+				print(self)
+				continue
 			print(self)
 			if ret:
-				print('\n\n ===== Dead ===== \n\n')
+				print('\n\n ===== Game Over ===== \n\n')
 				break
+
+		restart = input('Play Again? (Y/n) ')
+		restart = False if restart == 'n' else True
+		return restart
 	
 	
 	def __str__(self):
@@ -326,7 +335,11 @@ class env_wrapper(env2048):
 		pass
 
 if __name__ == '__main__':
-	a = env2048()
-	a.simple_game()
+	a = env2048(n=4)
+	while a.simple_game():
+		pass
+	print('Bye.')
+		
+
 	
 	

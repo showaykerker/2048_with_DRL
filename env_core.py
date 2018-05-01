@@ -47,6 +47,7 @@ class env2048:
 	def __init__(self, n=4):
 		self.n = n
 		self.mat = np.zeros((n,n))
+		self.score = 0
 	
 	
 	def clean(self):
@@ -54,9 +55,13 @@ class env2048:
 			Set self.mat to zeros
 		'''
 		self.mat = np.zeros((self.n, self.n))
+		self.score = 0
+		
+	def calc_score(self):
+		self.score = self.mat.sum()
+		return self.score
 	
-	
-	def add_blocks(self, max_pow=1, add_=2): 
+	def add_blocks(self, max_pow=2, add_=2): 
 		'''
 			Add add_ numbers range(2, 2**(max_pow+1)) to self.mat
 			If add_ is bigger than numbers of empty slot, then add=len(empty_slot)
@@ -67,7 +72,10 @@ class env2048:
 		idx = np.random.choice(range(len(empty)), size=add_, replace=False)
 		for i in idx:
 			r, c = empty[i]
-			fill_with = 2**np.random.randint(1, max_pow+1)
+			# More likely to choice smaller digit
+			arr = [2**i for i in range(1, 1+max_pow)]
+			p=[0.5+0.5**(max_pow)]+[0.5**(i+1) for i in range(1,max_pow)]
+			fill_with = np.random.choice(arr, 1, p=p)[0]
 			self.mat[r][c] = fill_with		
 	
 	
@@ -77,6 +85,7 @@ class env2048:
 		'''
 		self.clean()
 		self.add_blocks(max_pow=max_pow, add_=add_)
+		self.score = self.calc_score()
 
 	
 	def align(self, mat_, direction):
@@ -254,6 +263,8 @@ class env2048:
 		os.system(clean)
 		self.start()
 		print(self)
+		print('\n'+' '*20, 'score =',self.score)
+		
 		while not self.check_dead():
 			cmd = wait_key()
 			os.system(clean)
@@ -261,12 +272,17 @@ class env2048:
 			elif cmd == b's' or cmd == 's': ret = self.Action_Down()
 			elif cmd == b'a' or cmd == 'a': ret = self.Action_Left()
 			elif cmd == b'd' or cmd == 'd': ret = self.Action_Right()
+			elif cmd == b'q' or cmd == 'q': ret = True
 			else: 
 				print(self)
+				print('\n'+' '*20, 'score =',int(self.calc_score()))
 				continue
 			print(self)
+			print('\n'+' '*20, 'score =',int(self.calc_score()))
 			if ret:
-				print('\n\n ===== Game Over ===== \n\n')
+				print('\n')
+				print('\n ===== score: %8d ===== ' % self.calc_score())
+				print('\n =====    Game Over    ===== \n\n')
 				break
 
 		restart = input('Play Again? (Y/n) ')
@@ -335,7 +351,7 @@ class env_wrapper(env2048):
 		pass
 
 if __name__ == '__main__':
-	a = env2048(n=4)
+	a = env2048(n=5)
 	while a.simple_game():
 		pass
 	print('Bye.')

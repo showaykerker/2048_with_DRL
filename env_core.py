@@ -69,7 +69,9 @@ class env2048:
 		empty = np.array(np.where(self.mat==0)).transpose()
 		if len(empty) < add_: add_ = len(empty)
 		if add_ == 0: return
-		idx = np.random.choice(range(len(empty)), size=add_, replace=False)
+		actual_add = np.random.choice([i for i in range(1, add_+1)])
+		print(actual_add)
+		idx = np.random.choice(range(len(empty)), size=actual_add, replace=False)
 		for i in idx:
 			r, c = empty[i]
 			# More likely to choice smaller digit
